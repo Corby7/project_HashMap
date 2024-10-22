@@ -1,10 +1,33 @@
 import LinkedList from "./linkedList.js";
 
-class HashMap {
+export default class HashMap {
   constructor(loadFactor) {
     this.buckets = Array.from({ length: 16 }, () => new LinkedList());
     this.loadFactor = loadFactor;
-    this.size = 0;
+    this.capacity = 0;
+  }
+
+  resize() {
+    let totalBuckets = this.buckets.length;
+    //check if rezising is needed
+    if (this.capacity > totalBuckets * this.loadFactor) {
+      //double size
+      const newBucketCount = totalBuckets * 2;
+      const oldBuckets = this.buckets;
+      this.buckets = Array.from(
+        { length: newBucketCount },
+        () => new LinkedList()
+      );
+
+      for (let bucket of oldBuckets) {
+        let currentNode = bucket.head;
+        while (currentNode !== null) {
+          const newIndex = this.hash(currentNode.key);
+          this.buckets[newIndex].append(currentNode.key, currentNode.value);
+          currentNode = currentNode.nextNode;
+        }
+      }
+    }
   }
 
   hash(key) {
@@ -12,7 +35,8 @@ class HashMap {
 
     const primeNumber = 31;
     for (let i = 0; i < key.length; i++) {
-      hashCode = (primeNumber * hashCode + key.charCodeAt(i)) % 16;
+      hashCode =
+        (primeNumber * hashCode + key.charCodeAt(i)) % this.buckets.length;
     }
 
     return hashCode;
@@ -37,9 +61,11 @@ class HashMap {
     } else {
       //if bucket is empty, or collision
       bucket.append(key, value);
-      this.size++;
+      this.capacity++;
     }
 
+    //check if resizing is needed after adding the new element
+    this.resize();
     console.log(bucket.toString());
   }
 
@@ -60,14 +86,14 @@ class HashMap {
     let foundIndexNode = bucket.findIndex(key);
 
     if (foundIndexNode !== null) {
-      this.size--;
+      this.capacity--;
       return bucket.removeAt(foundIndexNode);
     }
     return false;
   }
 
   length() {
-    return this.size;
+    return this.capacity;
   }
 
   clear() {
@@ -123,35 +149,35 @@ class HashMap {
   }
 }
 
-const hashMap = new HashMap(0.8);
+// const hashMap = new HashMap(0.8);
 
-console.log(hashMap.hash("Carlos"));
-console.log(hashMap.hash("Carla"));
-console.log(hashMap.hash("Corbijn"));
-console.log(hashMap.hash("Corlas"));
-console.log(hashMap.hash("Neef"));
+// console.log(hashMap.hash("Carlos"));
+// console.log(hashMap.hash("Carla"));
+// console.log(hashMap.hash("Corbijn"));
+// console.log(hashMap.hash("Corlas"));
+// console.log(hashMap.hash("Neef"));
 
-hashMap.set("Carlos", "Test123");
-hashMap.set("Carla", "Test");
-hashMap.set("Carla", "Mogool");
+// hashMap.set("Carlos", "Test123");
+// hashMap.set("Carla", "Test");
+// hashMap.set("Carla", "Mogool");
 
-hashMap.set("Corlas", "Mogool");
-hashMap.set("Neef", "Mogool2");
+// hashMap.set("Corlas", "Mogool");
+// hashMap.set("Neef", "Mogool2");
 
-console.log(hashMap);
+// console.log(hashMap);
 
-console.log(`size: ${hashMap.size}`);
+// console.log(`size: ${hashMap.capacity}`);
 
-console.log(hashMap.get("Corlas"));
-console.log(hashMap.has("Carlas"));
+// console.log(hashMap.get("Corlas"));
+// console.log(hashMap.has("Carlas"));
 
-// console.log(hashMap.remove("Carla"));
-// console.log(hashMap.remove("Carlos"));
-// console.log(hashMap.remove("Corlas"));
-hashMap.set("Corlas", "Mogool");
+// // console.log(hashMap.remove("Carla"));
+// // console.log(hashMap.remove("Carlos"));
+// // console.log(hashMap.remove("Corlas"));
+// hashMap.set("Corlas", "Mogool");
 
-console.log(hashMap.size);
+// console.log(hashMap.capacity);
 
-console.log(hashMap.keys());
-console.log(hashMap.values());
-console.log(hashMap.entries());
+// console.log(hashMap.keys());
+// console.log(hashMap.values());
+// console.log(hashMap.entries());
