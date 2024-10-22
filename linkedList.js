@@ -100,7 +100,7 @@ export default class LinkedList {
     return false;
   }
 
-  find(key) {
+  findIndex(key) {
     let tmp = this.head;
     let currentIndex = 0;
     while (tmp !== null) {
@@ -108,6 +108,17 @@ export default class LinkedList {
         return currentIndex;
       }
       currentIndex++;
+      tmp = tmp.nextNode;
+    }
+    return null;
+  }
+
+  findNode(key) {
+    let tmp = this.head;
+    while (tmp !== null) {
+      if (tmp.key === key) {
+        return tmp;
+      }
       tmp = tmp.nextNode;
     }
     return null;
@@ -152,12 +163,16 @@ export default class LinkedList {
 
   removeAt(index) {
     if (index < 0 || index >= this.size()) {
-      return null;
+      return false;
+    }
+
+    if (this.head === null) {
+      return false; // List is empty, nothing to remove
     }
 
     if (index === 0) {
       this.head = this.head.nextNode;
-      return;
+      return true;
     }
 
     let currentNode = this.head;
@@ -167,8 +182,12 @@ export default class LinkedList {
       currentIndex++;
       previousNode = currentNode;
       currentNode = currentNode.nextNode;
+
+      if (currentNode === null) {
+        return false; // The index was valid but no node exists
+      }
     }
     previousNode.nextNode = currentNode.nextNode;
-    return;
+    return true;
   }
 }
