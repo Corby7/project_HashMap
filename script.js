@@ -18,20 +18,19 @@ class HashMap {
     return hashCode;
   }
 
-  // find(key) {
-  //   const index = this.hash(key);
-  //   let bucket = this.buckets[index];
-  //   return bucket.find(key);
-  // }
-
-  set(key, value) {
+  //helper method
+  _getBucket(key) {
     const index = this.hash(key);
     if (index < 0 || index >= this.buckets.length) {
-      throw new Error("Trying to access index out of bound");
+      throw new Error("Trying to access index out of bounds");
     }
-    let bucket = this.buckets[index];
+    return this.buckets[index];
+  }
 
+  set(key, value) {
+    let bucket = this._getBucket(key);
     let foundNode = bucket.findNode(key);
+
     if (foundNode) {
       //code that handles if key value pair already exists
       foundNode.value = value;
@@ -45,32 +44,21 @@ class HashMap {
   }
 
   get(key) {
-    const index = this.hash(key);
-    if (index < 0 || index >= this.buckets.length) {
-      throw new Error("Trying to access index out of bound");
-    }
-    let bucket = this.buckets[index];
+    let bucket = this._getBucket(key);
     let foundNode = bucket.findNode(key);
     return foundNode ? foundNode.value : null;
   }
 
   has(key) {
-    const index = this.hash(key);
-    if (index < 0 || index >= this.buckets.length) {
-      throw new Error("Trying to access index out of bound");
-    }
-    let bucket = this.buckets[index];
+    let bucket = this._getBucket(key);
     let foundNode = bucket.findNode(key);
     return foundNode ? true : false;
   }
 
   remove(key) {
-    const index = this.hash(key);
-    if (index < 0 || index >= this.buckets.length) {
-      throw new Error("Trying to access index out of bound");
-    }
-    let bucket = this.buckets[index];
+    let bucket = this._getBucket(key);
     let foundIndexNode = bucket.findIndex(key);
+
     if (foundIndexNode !== null) {
       this.size--;
       return bucket.removeAt(foundIndexNode);
